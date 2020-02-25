@@ -12,44 +12,58 @@ exports.create = (text, callback) => {
     var newFile = path.join(exports.dataDir, `${id}.txt`);
     fs.writeFile(newFile, text, (err) => {
       if (err) {
-        throw ("Error writting todo file: ", err)
+        throw ('Error writting todo file: ', err);
       } else {
-        callback(null, { id: id, text: text })
+        callback(null, { id: id, text: text });
       }
-    })
+    });
   });
 };
 
 exports.readAll = (callback) => {
   var files = [];
   fs.readdir(exports.dataDir, null, (err, files) => {
-    if (err) throw ("Error reading data directory", err);
+    if (err) {
+      callback(new Error('Cannot read files'));
+    }
     files = files.map(file => {
       file = file.split('.')[0];
       files.push({ id: file, text: file });
     });
     callback(null, files);
-  })
-  return files;
+  });
+  // return files;
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  var pathToFile = path.join(exports.dataDir, `${id}.txt`);
+  fs.readFile(pathToFile, 'utf8', (err, text) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      console.log(pathToFile);
+      callback(null, {id: id, text: text});
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+  var pathToFile = path.join(exports.dataDir, `${id}.txt`);
+  fs.readFile(pathToFile, 'utf8', (err) =>{
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      fs.writeFile(pathToFile, text, (err) => {
+        if (err) {
+          callback(new Error(`No item with id: ${id}`));
+        } else {
+          callback(null, { id: id, text: text });
+        }
+      });
+    }
+  });
+
+
 };
 
 exports.delete = (id, callback) => {
