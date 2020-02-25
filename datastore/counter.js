@@ -39,20 +39,23 @@ const writeCounter = (count, callback) => {
 // Public API - Fix this function //////////////////////////////////////////////
 
 exports.getNextUniqueId = (callback) => {
-  readCounter((err, count) => {
+  readCounter((err, data) => {
     if (err) {
       throw ("Error reading count. Error: ", err);
     };
-    writeCounter(count + 1, (err, counterString) => {
+    writeCounter(data + 1, (err, data) => {
       if (err) {
         throw ("Error writting count. Error: ", err);
       } else {
-        callback(null, counterString);
+        callback(null, data);
       }
     });
   });
 };
 
+exports.reformatId = (id) => {
+  return zeroPaddedNumber(Number(id));
+};
 
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////

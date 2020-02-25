@@ -9,7 +9,6 @@ var items = {};
 
 exports.create = (text, callback) => {
   var id = counter.getNextUniqueId((err, id) => {
-    console.log(dataDir);
     var newFile = path.join(exports.dataDir, `${id}.txt`);
     fs.writeFile(newFile, text, (err) => {
       if (err) {
@@ -22,10 +21,16 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
-  });
-  callback(null, data);
+  var files = [];
+  fs.readdir(exports.dataDir, null, (err, files) => {
+    if (err) throw ("Error reading data directory", err);
+    files = files.map(file => {
+      file = file.split('.')[0];
+      files.push({ id: file, text: file });
+    });
+    callback(null, files);
+  })
+  return files;
 };
 
 exports.readOne = (id, callback) => {
