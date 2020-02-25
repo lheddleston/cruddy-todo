@@ -22,17 +22,21 @@ exports.create = (text, callback) => {
 
 exports.readAll = (callback) => {
   var files = [];
-  fs.readdir(exports.dataDir, null, (err, files) => {
+  fs.readdir(exports.dataDir, null, (err, data) => {
     if (err) {
       callback(new Error('Cannot read files'));
     }
-    files = files.map(file => {
-      file = file.split('.')[0];
-      files.push({ id: file, text: file });
+
+    data = data.map(id => {
+      id = id.split('.')[0];
+      //somehow create a variable text that equals the contents of each file at id
+      
+      files.push({ id, text: id });
     });
+    console.log(files);
     callback(null, files);
   });
-  // return files;
+  return files;
 };
 
 exports.readOne = (id, callback) => {
@@ -41,7 +45,6 @@ exports.readOne = (id, callback) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
-      console.log(pathToFile);
       callback(null, {id: id, text: text});
     }
   });
